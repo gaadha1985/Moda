@@ -40,11 +40,11 @@ All Apache 2.0 licensed. Built on ViT-B/16-SigLIP. Every model beats the Fashion
 
 | Model | Dim | Size | Fine R@1 | nDCG@5 | Δ vs FashionSigLIP | Use when |
 |---|---|---|---|---|---|---|
-| `hopit-ai/moda-fashion-distilled` | 768 | 775 MB | **67.63** | 53.85 | **+3.79** | **Best accuracy.** Drop-in replacement for FashionSigLIP at the same dimension. Distilled from a 3-model ensemble into one 768d model. |
-| `hopit-ai/moda-fashion-matryoshka` | flexible (64-768) | 775 MB | **67.42 @ 256d** | 57.48 @ 256d | **+3.58 at 256d** | **Flexible dimension.** Slice the embedding to your storage budget at query time. 256d saturates Fine R@1 (3x smaller index than 768d, no quality loss). Combine with binary + Hamming rerank for 32 bytes per vector. |
-| `hopit-ai/moda-fashion-vision-fp16` | 768 | **186 MB** | 67.42 | 53.87 | +3.58 | **Smallest deployment.** Vision-only encoder, fp16 weights. 4.2x smaller than the full CLIP variant, only -0.21 points on Fine R@1. Built for edge, mobile, and serverless inference. |
-| `hopit-ai/moda-fashion-distilled-512d` | 512 | 777 MB | **67.63** | **54.11** | **+3.79** | **512-d at no quality loss.** Distilled backbone plus a learned Linear(768→512) projection head. Highest nDCG@5 of any MODA variant. 33% smaller embeddings than 768d. |
-| `hopit-ai/moda-fashion-deepfashion2` | 768 | 775 MB | 66.52 | 52.46 | +2.68 | **Simplest recipe.** Phase 5 single-model fine-tune on DeepFashion2 cross-domain pairs. No distillation, no ensemble. Ships for research reproducibility. |
+| `HopitAI/moda-fashion-distilled` | 768 | 775 MB | **67.63** | 53.85 | **+3.79** | **Best accuracy.** Drop-in replacement for FashionSigLIP at the same dimension. Distilled from a 3-model ensemble into one 768d model. |
+| `HopitAI/moda-fashion-matryoshka` | flexible (64-768) | 775 MB | **67.42 @ 256d** | 57.48 @ 256d | **+3.58 at 256d** | **Flexible dimension.** Slice the embedding to your storage budget at query time. 256d saturates Fine R@1 (3x smaller index than 768d, no quality loss). Combine with binary + Hamming rerank for 32 bytes per vector. |
+| `HopitAI/moda-fashion-vision-fp16` | 768 | **186 MB** | 67.42 | 53.87 | +3.58 | **Smallest deployment.** Vision-only encoder, fp16 weights. 4.2x smaller than the full CLIP variant, only -0.21 points on Fine R@1. Built for edge, mobile, and serverless inference. |
+| `HopitAI/moda-fashion-distilled-512d` | 512 | 777 MB | **67.63** | **54.11** | **+3.79** | **512-d at no quality loss.** Distilled backbone plus a learned Linear(768→512) projection head. Highest nDCG@5 of any MODA variant. 33% smaller embeddings than 768d. |
+| `HopitAI/moda-fashion-deepfashion2` | 768 | 775 MB | 66.52 | 52.46 | +2.68 | **Simplest recipe.** Phase 5 single-model fine-tune on DeepFashion2 cross-domain pairs. No distillation, no ensemble. Ships for research reproducibility. |
 
 Every model card ships with a standalone `inference.py` (run `python inference.py --image <path>` to get embeddings, no external config needed), the full per-subset LookBench evaluation, paper-reproduction deltas against the FashionSigLIP baseline, and the leakage audit artifact. Evaluation scripts live in this repo.
 
