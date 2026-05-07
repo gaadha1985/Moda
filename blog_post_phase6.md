@@ -228,13 +228,15 @@ Phase 6 extends Phase 5 in the same direction but at a fraction of the cost.
 
 Seven blogs in, the Fashion Search series has covered text retrieval on H&M and image-to-image retrieval on LookBench. The stack is public. The models are on HuggingFace. The numbers are reproducible.
 
-The series keeps going. Two tracks are already in flight:
+The series keeps going. Three tracks are already in flight:
 
 **More benchmarks.** LookBench is one image retrieval benchmark. It is not the only one. We are running the same models against DeepFashion-InShop, DeepFashion-MultiModal, and the Marqo 7-dataset suite with the same leakage discipline. The question is whether the recipe that worked on LookBench generalizes to other distributions, or whether we tuned for one test set. Early numbers are coming.
 
 **Attribute extraction.** A fashion embedding is useful for retrieval, but retailers also want structured outputs: is this garment long-sleeved, what color is it, what is the neckline. We are running linear probes on the MODA embeddings for category, subcategory, and color prediction, comparing against FashionSigLIP head-to-head. The initial numbers on DeepFashion-InShop and DeepFashion-MultiModal are in the repo. H&M is next after we fix the on-demand image loading for the 30K-image probe set.
 
-Both threads extend the same question this blog answers: is there a free embedding that beats the state-of-the-art artifact everyone is using. Retrieval was the first test. Attribute extraction is the second. More benchmarks settles whether the answer was universal or local.
+**Deployment-ready follow-on models.** Internal benchmarks at the same 256-dim deployment size show another 30%+ retrieval improvement on top of what the public Matryoshka model delivers. We have not open-sourced these because the recipes are still being validated. They are available now for enterprise deployment at fashion retailers running visual search at scale.
+
+The first two threads extend the same question this blog answers: is there a free embedding that beats the state-of-the-art artifact everyone is using. Retrieval was the first test. Attribute extraction is the second. More benchmarks settles whether the answer was universal or local. The third thread is what these recipes look like one generation ahead.
 
 In parallel, the next series on Fashion Trend Prediction is being built quietly. No open-source equivalents for that work exist. We expect to publish the first research paper in the coming months.
 
