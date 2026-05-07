@@ -1,0 +1,511 @@
+{
+  "checkpoint": "models/moda-siglip-matryoshka/best/model_state_dict.pt",
+  "slices": [
+    256
+  ],
+  "variants": [
+    "fp32",
+    "fp16",
+    "int8",
+    "binary",
+    "binary_rerank"
+  ],
+  "subsets": {
+    "real_studio_flat": {
+      "256": {
+        "fp32": {
+          "fine_recall": {
+            "recall@1": 69.93,
+            "recall@5": 88.63,
+            "recall@10": 92.48
+          },
+          "coarse_recall": {
+            "recall@1": 91.89,
+            "recall@5": 96.93,
+            "recall@10": 98.02
+          },
+          "id_recall": {
+            "recall@1": 59.35,
+            "recall@5": 84.67,
+            "recall@10": 89.61
+          },
+          "ndcg@5": 57.97,
+          "bytes": {
+            "q_bytes": 1024,
+            "g_bytes": 1024
+          }
+        },
+        "fp16": {
+          "fine_recall": {
+            "recall@1": 69.63,
+            "recall@5": 88.63,
+            "recall@10": 92.48
+          },
+          "coarse_recall": {
+            "recall@1": 91.89,
+            "recall@5": 96.93,
+            "recall@10": 98.02
+          },
+          "id_recall": {
+            "recall@1": 59.64,
+            "recall@5": 84.57,
+            "recall@10": 89.32
+          },
+          "ndcg@5": 57.92,
+          "bytes": {
+            "q_bytes": 512,
+            "g_bytes": 512
+          }
+        },
+        "int8": {
+          "fine_recall": {
+            "recall@1": 69.83,
+            "recall@5": 88.53,
+            "recall@10": 92.48
+          },
+          "coarse_recall": {
+            "recall@1": 91.79,
+            "recall@5": 96.93,
+            "recall@10": 98.02
+          },
+          "id_recall": {
+            "recall@1": 59.45,
+            "recall@5": 84.57,
+            "recall@10": 89.61
+          },
+          "ndcg@5": 57.93,
+          "bytes": {
+            "q_bytes": 256,
+            "g_bytes": 256
+          }
+        },
+        "binary": {
+          "fine_recall": {
+            "recall@1": 66.47,
+            "recall@5": 86.15,
+            "recall@10": 91.0
+          },
+          "coarse_recall": {
+            "recall@1": 89.12,
+            "recall@5": 96.64,
+            "recall@10": 97.73
+          },
+          "id_recall": {
+            "recall@1": 56.08,
+            "recall@5": 81.7,
+            "recall@10": 88.33
+          },
+          "ndcg@5": 54.08,
+          "bytes": {
+            "q_bytes": 32,
+            "g_bytes": 32
+          }
+        },
+        "binary_rerank": {
+          "fine_recall": {
+            "recall@1": 70.03,
+            "recall@5": 88.72,
+            "recall@10": 92.58
+          },
+          "coarse_recall": {
+            "recall@1": 91.89,
+            "recall@5": 96.93,
+            "recall@10": 98.12
+          },
+          "id_recall": {
+            "recall@1": 59.74,
+            "recall@5": 84.57,
+            "recall@10": 89.71
+          },
+          "ndcg@5": 57.96,
+          "bytes": {
+            "q": 544,
+            "g": 544,
+            "note": "binary index + fp16 for top-100 rerank"
+          }
+        }
+      }
+    },
+    "aigen_studio": {
+      "256": {
+        "fp32": {
+          "fine_recall": {
+            "recall@1": 78.24,
+            "recall@5": 94.82,
+            "recall@10": 98.45
+          },
+          "coarse_recall": {
+            "recall@1": 94.3,
+            "recall@5": 98.96,
+            "recall@10": 100.0
+          },
+          "id_recall": {
+            "recall@1": 76.68,
+            "recall@5": 95.34,
+            "recall@10": 96.89
+          },
+          "ndcg@5": 73.62,
+          "bytes": {
+            "q_bytes": 1024,
+            "g_bytes": 1024
+          }
+        },
+        "fp16": {
+          "fine_recall": {
+            "recall@1": 78.24,
+            "recall@5": 94.82,
+            "recall@10": 98.45
+          },
+          "coarse_recall": {
+            "recall@1": 94.3,
+            "recall@5": 98.96,
+            "recall@10": 100.0
+          },
+          "id_recall": {
+            "recall@1": 76.68,
+            "recall@5": 95.34,
+            "recall@10": 96.89
+          },
+          "ndcg@5": 73.58,
+          "bytes": {
+            "q_bytes": 512,
+            "g_bytes": 512
+          }
+        },
+        "int8": {
+          "fine_recall": {
+            "recall@1": 79.27,
+            "recall@5": 95.34,
+            "recall@10": 98.45
+          },
+          "coarse_recall": {
+            "recall@1": 94.3,
+            "recall@5": 99.48,
+            "recall@10": 100.0
+          },
+          "id_recall": {
+            "recall@1": 77.2,
+            "recall@5": 95.85,
+            "recall@10": 96.89
+          },
+          "ndcg@5": 73.74,
+          "bytes": {
+            "q_bytes": 256,
+            "g_bytes": 256
+          }
+        },
+        "binary": {
+          "fine_recall": {
+            "recall@1": 76.17,
+            "recall@5": 90.16,
+            "recall@10": 95.34
+          },
+          "coarse_recall": {
+            "recall@1": 90.16,
+            "recall@5": 97.41,
+            "recall@10": 98.45
+          },
+          "id_recall": {
+            "recall@1": 68.91,
+            "recall@5": 88.08,
+            "recall@10": 92.75
+          },
+          "ndcg@5": 66.07,
+          "bytes": {
+            "q_bytes": 32,
+            "g_bytes": 32
+          }
+        },
+        "binary_rerank": {
+          "fine_recall": {
+            "recall@1": 78.24,
+            "recall@5": 95.34,
+            "recall@10": 97.93
+          },
+          "coarse_recall": {
+            "recall@1": 93.78,
+            "recall@5": 98.96,
+            "recall@10": 100.0
+          },
+          "id_recall": {
+            "recall@1": 76.68,
+            "recall@5": 95.85,
+            "recall@10": 96.37
+          },
+          "ndcg@5": 73.64,
+          "bytes": {
+            "q": 544,
+            "g": 544,
+            "note": "binary index + fp16 for top-100 rerank"
+          }
+        }
+      }
+    },
+    "real_streetlook": {
+      "256": {
+        "fp32": {
+          "fine_recall": {
+            "recall@1": 59.53,
+            "recall@5": 75.64,
+            "recall@10": 79.0
+          },
+          "coarse_recall": {
+            "recall@1": 77.17,
+            "recall@5": 89.4,
+            "recall@10": 90.62
+          },
+          "id_recall": {
+            "recall@1": 45.87,
+            "recall@5": 66.46,
+            "recall@10": 71.15
+          },
+          "ndcg@5": 50.83,
+          "bytes": {
+            "q_bytes": 1024,
+            "g_bytes": 1024
+          }
+        },
+        "fp16": {
+          "fine_recall": {
+            "recall@1": 59.63,
+            "recall@5": 75.54,
+            "recall@10": 79.0
+          },
+          "coarse_recall": {
+            "recall@1": 77.06,
+            "recall@5": 89.3,
+            "recall@10": 90.62
+          },
+          "id_recall": {
+            "recall@1": 45.67,
+            "recall@5": 66.77,
+            "recall@10": 71.15
+          },
+          "ndcg@5": 50.88,
+          "bytes": {
+            "q_bytes": 512,
+            "g_bytes": 512
+          }
+        },
+        "int8": {
+          "fine_recall": {
+            "recall@1": 59.43,
+            "recall@5": 75.54,
+            "recall@10": 79.2
+          },
+          "coarse_recall": {
+            "recall@1": 77.17,
+            "recall@5": 88.99,
+            "recall@10": 90.83
+          },
+          "id_recall": {
+            "recall@1": 45.97,
+            "recall@5": 66.67,
+            "recall@10": 71.15
+          },
+          "ndcg@5": 50.8,
+          "bytes": {
+            "q_bytes": 256,
+            "g_bytes": 256
+          }
+        },
+        "binary": {
+          "fine_recall": {
+            "recall@1": 55.66,
+            "recall@5": 70.74,
+            "recall@10": 77.88
+          },
+          "coarse_recall": {
+            "recall@1": 74.11,
+            "recall@5": 86.54,
+            "recall@10": 89.81
+          },
+          "id_recall": {
+            "recall@1": 41.49,
+            "recall@5": 62.28,
+            "recall@10": 69.62
+          },
+          "ndcg@5": 46.04,
+          "bytes": {
+            "q_bytes": 32,
+            "g_bytes": 32
+          }
+        },
+        "binary_rerank": {
+          "fine_recall": {
+            "recall@1": 59.73,
+            "recall@5": 75.94,
+            "recall@10": 79.31
+          },
+          "coarse_recall": {
+            "recall@1": 77.06,
+            "recall@5": 89.6,
+            "recall@10": 91.44
+          },
+          "id_recall": {
+            "recall@1": 45.87,
+            "recall@5": 66.46,
+            "recall@10": 71.05
+          },
+          "ndcg@5": 50.95,
+          "bytes": {
+            "q": 544,
+            "g": 544,
+            "note": "binary index + fp16 for top-100 rerank"
+          }
+        }
+      }
+    },
+    "aigen_streetlook": {
+      "256": {
+        "fp32": {
+          "fine_recall": {
+            "recall@1": 83.12,
+            "recall@5": 94.38,
+            "recall@10": 96.88
+          },
+          "coarse_recall": {
+            "recall@1": 91.88,
+            "recall@5": 96.88,
+            "recall@10": 97.5
+          },
+          "id_recall": {
+            "recall@1": 73.12,
+            "recall@5": 90.0,
+            "recall@10": 92.5
+          },
+          "ndcg@5": 76.39,
+          "bytes": {
+            "q_bytes": 1024,
+            "g_bytes": 1024
+          }
+        },
+        "fp16": {
+          "fine_recall": {
+            "recall@1": 83.12,
+            "recall@5": 94.38,
+            "recall@10": 96.88
+          },
+          "coarse_recall": {
+            "recall@1": 91.88,
+            "recall@5": 96.88,
+            "recall@10": 97.5
+          },
+          "id_recall": {
+            "recall@1": 72.5,
+            "recall@5": 89.38,
+            "recall@10": 92.5
+          },
+          "ndcg@5": 76.47,
+          "bytes": {
+            "q_bytes": 512,
+            "g_bytes": 512
+          }
+        },
+        "int8": {
+          "fine_recall": {
+            "recall@1": 83.12,
+            "recall@5": 94.38,
+            "recall@10": 96.88
+          },
+          "coarse_recall": {
+            "recall@1": 91.88,
+            "recall@5": 96.88,
+            "recall@10": 97.5
+          },
+          "id_recall": {
+            "recall@1": 72.5,
+            "recall@5": 89.38,
+            "recall@10": 93.12
+          },
+          "ndcg@5": 76.11,
+          "bytes": {
+            "q_bytes": 256,
+            "g_bytes": 256
+          }
+        },
+        "binary": {
+          "fine_recall": {
+            "recall@1": 77.5,
+            "recall@5": 88.75,
+            "recall@10": 95.0
+          },
+          "coarse_recall": {
+            "recall@1": 88.75,
+            "recall@5": 94.38,
+            "recall@10": 95.62
+          },
+          "id_recall": {
+            "recall@1": 63.75,
+            "recall@5": 85.62,
+            "recall@10": 91.25
+          },
+          "ndcg@5": 67.73,
+          "bytes": {
+            "q_bytes": 32,
+            "g_bytes": 32
+          }
+        },
+        "binary_rerank": {
+          "fine_recall": {
+            "recall@1": 83.12,
+            "recall@5": 94.38,
+            "recall@10": 96.88
+          },
+          "coarse_recall": {
+            "recall@1": 91.88,
+            "recall@5": 97.5,
+            "recall@10": 97.5
+          },
+          "id_recall": {
+            "recall@1": 72.5,
+            "recall@5": 90.0,
+            "recall@10": 92.5
+          },
+          "ndcg@5": 76.56,
+          "bytes": {
+            "q": 544,
+            "g": 544,
+            "note": "binary index + fp16 for top-100 rerank"
+          }
+        }
+      }
+    }
+  },
+  "device": "cpu",
+  "batch_size": 4,
+  "overall": {
+    "256": {
+      "fp32": {
+        "fine_recall@1": 67.16,
+        "coarse_recall@1": 85.93,
+        "ndcg@5": 57.53,
+        "id_recall@1": 56.08
+      },
+      "fp16": {
+        "fine_recall@1": 67.08,
+        "coarse_recall@1": 85.88,
+        "ndcg@5": 57.53,
+        "id_recall@1": 56.08
+      },
+      "int8": {
+        "fine_recall@1": 67.16,
+        "coarse_recall@1": 85.89,
+        "ndcg@5": 57.49,
+        "id_recall@1": 56.16
+      },
+      "binary": {
+        "fine_recall@1": 63.5,
+        "coarse_recall@1": 82.9,
+        "ndcg@5": 52.63,
+        "id_recall@1": 51.56
+      },
+      "binary_rerank": {
+        "fine_recall@1": 67.29,
+        "coarse_recall@1": 85.84,
+        "ndcg@5": 57.59,
+        "id_recall@1": 56.2
+      }
+    }
+  }
+}

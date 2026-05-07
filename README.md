@@ -1,7 +1,7 @@
 # MODA
 
 **The first open-source, end-to-end benchmark for fashion search with a full component-by-component breakdown.**  
-253,685 purchase-grounded queries · 105,542 H&M products · 40+ pipeline configs · nDCG@10 = 0.1063 on H&M text retrieval (+301% over dense baseline) · Fine R@1 = 67.68 on LookBench image-to-image retrieval (+3.84 over FashionSigLIP)
+253,685 purchase-grounded queries · 105,542 H&M products · 40+ pipeline configs · nDCG@10 = 0.1063 on H&M text retrieval (+301% over dense baseline) · Fine R@1 = 67.68 on LookBench image-to-image retrieval (+3.84 over FashionSigLIP) · MODA-SigLIP-Matryoshka model on HuggingFace (96x compression vs FashionSigLIP fp32, equal quality)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -30,6 +30,21 @@ We are publishing this work as a series of technical blog posts, each covering o
 | [Blog 4](blog_post_phase3c.md) | Training the retriever on its own mistakes | Fine-tuning FashionCLIP and SPLADE on hard negatives | nDCG@10 = 0.1063 (+9%) |
 | [Blog 5](blog_post_phase4.md) | Adding eyes to the search engine | Three-Tower multimodal retriever (text + image) | nDCG@10 = 0.0833 (lateral) |
 | [Blog 6](blog_post_phase5.md) | Beating FashionSigLIP | Cross-domain fine-tuning on LookBench | Fine R@1 = 67.68 (+3.84 over baseline) |
+| [Blog 7](blog_post_phase6.md) | One model, five sizes | Matryoshka distillation + quantization, HF release | 32-byte vector at +3.45, 96x smaller than baseline at equal quality |
+
+---
+
+## Released models
+
+All MIT licensed. Drop-in replacements for FashionSigLIP. Three checkpoints, ranked by recommended use.
+
+| Model | Dim | Best Fine R@1 | Δ vs FashionSigLIP | Use when |
+|---|---|---|---|---|
+| `hopit-ai/moda-fashion-siglip-matryoshka` | flexible (64 / 128 / 256 / 384 / 512 / 768) | 67.42 @ 256d | +3.58 | Recommended default. Slice the embedding to whatever dimension fits your storage budget at query time. 256d saturates Fine R@1 on LookBench. Combine with binary + Hamming rerank for 32 bytes per vector at full retrieval quality. |
+| `hopit-ai/moda-fashion-siglip` | 768 | 67.63 | +3.79 | Drop-in replacement for FashionSigLIP. Same dimensionality, ensemble-class quality in a single forward pass. Use when you cannot change embedding dimension. |
+| `hopit-ai/moda-fashion-siglip-deepfashion2` | 768 | 66.52 | +2.68 | Phase 5 single-model fine-tune. Smaller training recipe, easier to reproduce. Ships for research reproducibility. |
+
+Each model card includes the full per-subset LookBench evaluation, paper-reproduction deltas against the FashionSigLIP baseline, and the leakage audit artifact. Evaluation scripts live in this repo.
 
 ---
 
@@ -144,6 +159,49 @@ Win-loss across all metric × subset cells: 14W / 1T / 0L for the standalone fin
 
 The winning recipe was specifically cross-domain (DeepFashion2 shop ↔ consumer pairs) plus an ensemble with a different model family at test time. Three of four intuitive approaches failed before we found it.
 
+### Phase 6: Matryoshka distillation, quantization, and the deployable model (LookBench, 2,345 queries)
+
+The Phase 5 best uses an ensemble of two models. For deployment, that's two encoder forward passes per image at index time and 2x the storage. Phase 6 collapses the ensemble's quality into a single distilled model at multiple dimensions, then compresses each vector to the smallest precision that preserves retrieval.
+
+**Distillation (Recipe A')**: knowledge distillation from the Phase 5 ensemble teacher into a single FashionSigLIP-shaped student. One forward pass at inference, ensemble-class quality.
+
+| Model | Dim | Fine R@1 | Δ vs FashionSigLIP |
+|---|---|---|---|
+| FashionSigLIP (baseline) | 768 | 63.84 | – |
+| Phase 5 ensemble (two models) | 2048 | 67.68 | +3.84 |
+| **MODA-SigLIP-Distilled (Recipe A')** | **768** | **67.63** | **+3.79** |
+
+The distilled single model lands 0.05 points below the ensemble — within noise — using one encoder at inference instead of two.
+
+**Matryoshka distillation**: same recipe, but the student trains so that any prefix of the embedding (64, 128, 256, 384, 512, 768 dims) is a valid retrieval vector on its own.
+
+| Slice | Fine R@1 | Coarse R@1 | nDCG@5 | Δ vs SigLIP @ 768 |
+|---|---|---|---|---|
+| 64d | 64.05 | 82.90 | 54.06 | +0.21 |
+| 128d | 66.23 | 84.57 | 56.57 | +2.39 |
+| **256d** | **67.42** | **86.06** | **57.48** | **+3.58** |
+| 384d | 67.29 | 86.27 | 57.72 | +3.45 |
+| 512d | 67.42 | 86.05 | 57.91 | +3.58 |
+| 768d | 67.20 | 86.39 | 58.13 | +3.36 |
+
+Fine Recall@1 saturates at 256d. nDCG@5 keeps climbing slightly with more dimensions, useful for ranked-grid UIs. The same model file produces all six prefixes; the user slices whatever length matches their storage budget at query time.
+
+**Quantization (256d slice)**: precision sweep on the matryoshka 256d output.
+
+| Variant | Bytes per vector | Fine R@1 | Coarse R@1 | nDCG@5 |
+|---|---|---|---|---|
+| fp32 (reference) | 1024 | 67.16 | 85.93 | 57.53 |
+| fp16 | 512 | 67.08 | 85.88 | 57.53 |
+| int8 | 256 | 67.16 | 85.89 | 57.49 |
+| binary (sign only) | 32 | 63.50 | 82.90 | 52.63 |
+| **binary + fp16 rerank** | **32** | **67.29** | **85.84** | **57.59** |
+
+FP16 and int8 cost essentially nothing in retrieval quality. Binary-only loses 3.66 points. Binary plus a Hamming-distance shortlist with fp16 cosine rerank recovers full quality at 32 bytes per vector.
+
+For a 100M-product index, that's the difference between 307GB (FashionSigLIP fp32 at 768d) and 3.2GB (MODA Matryoshka at 256d binary). 96x smaller at equal retrieval quality.
+
+**MODA-SigLIP-Matryoshka is on HuggingFace**, MIT licensed. Deployment recipe in the model card: choose your dimension (recommended: 256), choose your precision (recommended: binary + fp16 rerank for 32 bytes per vector), drop into your existing FAISS or vector database.
+
 ### Latency (Apple M-series, per query)
 
 | Stage | Mean | p50 | p95 |
@@ -192,7 +250,15 @@ The winning recipe was specifically cross-domain (DeepFashion2 shop ↔ consumer
 
 16. **Joint text-image fine-tuning hurts pure image-to-image retrieval** -- Phase 4F's multimodal joint training, which improved text-to-product retrieval on H&M, regressed LookBench Fine R@1 by -9.04 points. Multi-task joint embeddings fight themselves: text alignment and image-image retrieval pull in different directions. Single-task models win when the task is narrow.
 
-17. **~80ms full pipeline on $0 hardware** -- Everything runs on Apple Silicon with no cloud GPU cost.
+17. **Distillation collapses the ensemble into one model with no quality loss** -- Knowledge distillation from the Phase 5 ensemble teacher into a single FashionSigLIP-shaped student lands at Fine R@1 = 67.63 (+3.79 over baseline), 0.05 points below the two-model ensemble. Within noise. The cost: one forward pass at inference instead of two, and half the storage.
+
+18. **Fine Recall@1 saturates at 256 dimensions on LookBench** -- The Matryoshka student, trained so any prefix is a valid retrieval vector, hits 67.42 at 256d and does not improve at higher dims on the top-1 retrieval metric. nDCG@5 keeps improving slightly with more dimensions (relevant to ranked-grid UIs), but the standard 768-dim model size carries 3x more dimensions than top-1 retrieval requires. Most teams shipping fashion embeddings at 768d are storing redundancy.
+
+19. **Binary codes plus Hamming rerank match fp32 retrieval at 32 bytes per vector** -- FP16 and int8 quantization cost nothing on Fine R@1. Binary alone loses 3.66 points. Binary plus a Hamming-distance shortlist with fp16 cosine rerank recovers full quality. For a 100M-product index, that's a 96x storage reduction (307GB → 3.2GB) versus FashionSigLIP fp32 at 768d. Most retrieval systems are not bottlenecked by precision; they just have not measured what cheaper precision actually costs.
+
+20. **Multi-task joint embeddings fight themselves** -- Recipe Z (scaling the text training corpus while keeping the joint encoder) regressed image-image retrieval by -3.59 points despite improving text-to-product retrieval. Text alignment and pure image retrieval pull a joint model in different directions. If you need both, ship two models.
+
+21. **~80ms full pipeline on $0 hardware** -- Everything runs on Apple Silicon with no cloud GPU cost.
 
 ---
 
@@ -338,7 +404,22 @@ MODA/
 │   ├── eval_lookbench_ensemble.py <- Phase 5: ensemble + test-time augmentation eval
 │   ├── train_deepfashion2_contrastive.py <- Phase 5: cross-domain DeepFashion2 contrastive fine-tune
 │   ├── marqo_clean_leakage_audit.py <- Phase 5: cross-benchmark leakage audit
-│   └── data_leakage_check_extended.py <- Phase 5: extended train/eval leakage check across all pools
+│   ├── data_leakage_check_extended.py <- Phase 5: extended train/eval leakage check across all pools
+│   ├── distill_ensemble_to_student.py <- Phase 6: distill the Phase 5 ensemble into a single 768d student (Recipe A')
+│   ├── distill_matryoshka.py        <- Phase 6: Matryoshka distillation, one model at six dimensions
+│   ├── distill_512d_native.py       <- Phase 6: native-512d distillation chain
+│   ├── distill_text_vision.py       <- Phase 6: Recipe Y joint text+vision distillation
+│   ├── distill_recipe_z.py          <- Phase 6: Recipe Z scaled-text trainer (failed experiment)
+│   ├── distill_recipe_z_plus.py     <- Phase 6: Recipe Z+ with frozen text-tower teacher (paused)
+│   ├── eval_matryoshka_lookbench.py <- Phase 6: per-slice LookBench eval for Matryoshka student
+│   ├── eval_lookbench_quantized.py  <- Phase 6: precision sweep (fp32/fp16/int8/binary/binary+rerank)
+│   ├── eval_lookbench_512d.py       <- Phase 6: native 512d eval
+│   ├── eval_text2image_distilled.py <- Phase 6: text-to-image retrieval eval for distilled models
+│   ├── verify_quantized_eval.py     <- Phase 6: quantization correctness checks
+│   ├── cache_teacher_embeddings.py  <- Phase 6: precompute teacher embeddings for distillation
+│   ├── cache_hnm_teacher_streaming.py <- Phase 6: streaming H&M teacher cache (OOM-safe variant)
+│   ├── generate_llm_captions.py     <- Phase 6: LLM caption generation for Recipe Z+ training
+│   └── linear_probe_attributes.py   <- Phase 6+: attribute extraction via linear probes
 │
 ├── scripts/
 │   ├── build_hnm_benchmark.py     <- Download + prepare H&M data
@@ -358,9 +439,18 @@ MODA/
 │   │   ├── dinov2_eval.json                 <- DINOv2 zero-shot (failure mode comparison)
 │   │   ├── data_leakage_check.json          <- Train/eval leakage audit
 │   │   ├── data_leakage_check_v2.json       <- Extended leakage audit (all training pools)
-│   │   └── phase5_summary.json              <- Full Phase 5 ranked results + win/loss matrix
-│   └── marqo_bench/
-│       └── leakage_audit_clean.json     <- Marqo benchmark cross-leakage audit
+│   │   ├── phase5_summary.json              <- Full Phase 5 ranked results + win/loss matrix
+│   │   ├── distilled_eval.json              <- Phase 6: Recipe A' distilled single 768d student
+│   │   ├── distilled_512d_eval.json         <- Phase 6: native 512d distillation eval
+│   │   ├── matryoshka_eval.json             <- Phase 6: Matryoshka eval at all six dimensions
+│   │   ├── quantized_eval.json              <- Phase 6: precision sweep at 256d
+│   │   ├── quantized_smoke.json             <- Phase 6: smoke-test confirmation of quantization
+│   │   ├── recipe_z_eval.json               <- Phase 6: Recipe Z (failed scaled-text experiment)
+│   │   └── text2image_distilled_eval.json   <- Phase 6: text-to-image eval on distilled checkpoints
+│   ├── marqo_bench/
+│   │   └── leakage_audit_clean.json     <- Marqo benchmark cross-leakage audit
+│   └── attributes/
+│       └── linear_probe_eval.json       <- Phase 6+: linear probe attribute extraction (DeepFashion-InShop, DeepFashion-MultiModal)
 │
 ├── blog_post.md                   <- Blog 1: Zero-shot pipeline
 ├── blog_post_phase2b.md           <- Blog 2: SPLADE swap
@@ -395,6 +485,7 @@ Each query in `qrels.csv` has:
 | **3C** | Fine-tuning the retriever on its own mistakes (+9% to project best 0.1063) | Done |
 | **4** | Three-Tower multimodal retriever on H&M (lateral experiment, 0.0833 aggregate) | Done |
 | **5** | LookBench image-to-image retrieval: cross-domain fine-tuning beats FashionSigLIP by +3.84 | Done |
+| **6** | Matryoshka distillation + quantization: one model at five sizes, 96x compression at equal quality, HF release | Done |
 
 ---
 

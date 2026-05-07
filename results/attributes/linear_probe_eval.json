@@ -1,0 +1,72 @@
+{
+  "protocol": {
+    "description": "Logistic regression linear probe on frozen image embeddings. Top-1 accuracy and macro-F1. Stratified 80/20 train/test split per (dataset, attribute). Sparse classes (<5 samples) dropped.",
+    "feature_extractor": "L2-normalized image embeddings (768-d) from vision encoder",
+    "classifier": "sklearn.linear_model.LogisticRegression(C=1.0, max_iter=2000)",
+    "split": "sklearn.model_selection.train_test_split(test_size=0.2, stratify=y, random_state=42)"
+  },
+  "models_compared": {
+    "fashionsiglip": "Marqo/marqo-fashionSigLIP (baseline)",
+    "siglip-deepfashion2": "MODA-SigLIP-DeepFashion2 (our DF2 vision-only contrastive fine-tune)"
+  },
+  "datasets": {
+    "df_inshop": {
+      "source": "Marqo/deepfashion-inshop",
+      "n_images": 52591,
+      "attributes_probed": ["category1", "category2", "color"]
+    },
+    "df_multimodal": {
+      "source": "Marqo/deepfashion-multimodal",
+      "n_images": 42537,
+      "attributes_probed": ["category1", "category2"]
+    },
+    "hnm": {
+      "source": "data/raw/hnm/articles.csv (30K subsample)",
+      "n_images": 0,
+      "attributes_probed": [],
+      "status": "SKIPPED — OOM during in-memory image decode of 30K PIL objects; scheduled as a follow-up with on-demand loading"
+    }
+  },
+  "results": [
+    {
+      "dataset": "df_inshop", "attribute": "category1", "n_samples": 52591, "n_classes": 2,
+      "fashionsiglip":        {"accuracy": 0.9976, "macro_f1": 0.9953},
+      "siglip-deepfashion2":  {"accuracy": 0.9968, "macro_f1": 0.9936},
+      "delta_acc": -0.0008, "delta_macro_f1": -0.0017
+    },
+    {
+      "dataset": "df_inshop", "attribute": "category2", "n_samples": 52591, "n_classes": 16,
+      "fashionsiglip":        {"accuracy": 0.8236, "macro_f1": 0.7095},
+      "siglip-deepfashion2":  {"accuracy": 0.8212, "macro_f1": 0.7100},
+      "delta_acc": -0.0024, "delta_macro_f1":  0.0005
+    },
+    {
+      "dataset": "df_inshop", "attribute": "color", "n_samples": 47359, "n_classes": 200,
+      "fashionsiglip":        {"accuracy": 0.3432, "macro_f1": 0.1236},
+      "siglip-deepfashion2":  {"accuracy": 0.3698, "macro_f1": 0.2116},
+      "delta_acc":  0.0266, "delta_macro_f1":  0.0880
+    },
+    {
+      "dataset": "df_multimodal", "attribute": "category1", "n_samples": 42537, "n_classes": 2,
+      "fashionsiglip":        {"accuracy": 1.0000, "macro_f1": 1.0000},
+      "siglip-deepfashion2":  {"accuracy": 0.9996, "macro_f1": 0.9991},
+      "delta_acc": -0.0004, "delta_macro_f1": -0.0009
+    },
+    {
+      "dataset": "df_multimodal", "attribute": "category2", "n_samples": 42537, "n_classes": 16,
+      "fashionsiglip":        {"accuracy": 0.8188, "macro_f1": 0.6482},
+      "siglip-deepfashion2":  {"accuracy": 0.8186, "macro_f1": 0.6559},
+      "delta_acc": -0.0002, "delta_macro_f1":  0.0077
+    }
+  ],
+  "summary": {
+    "mean_delta_acc": 0.00456,
+    "mean_delta_macro_f1": 0.01872,
+    "verdict": "MODA-SigLIP-DF2 preserved attribute information (delta_acc within [-0.24%, +2.66%] across all probes) and slightly improved fine-grained color discrimination. Green-lights Recipe A' distillation — no need to add attribute-specific loss terms.",
+    "dataset_independence": "Recipe-X datasets verified 0-overlap with LookBench via MD5 audit (results/lookbench/data_leakage_check_v2.json)."
+  },
+  "followup": {
+    "hnm_probe": "To be run with on-demand image loading (DistillDataset-style lazy access) to avoid OOM on 30K PIL decode.",
+    "target_attributes": "Color from DF-InShop demonstrated DF2's gain; next probes: 'fabric' and 'pattern' from DF-MultiModal (if parseable) and H&M department codes."
+  }
+}

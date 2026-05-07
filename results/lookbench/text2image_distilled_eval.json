@@ -1,0 +1,28 @@
+{
+  "fashionsiglip_baseline": {
+    "n_query": 1500,
+    "n_gallery": 42537,
+    "metrics": {
+      "recall@1": 0.27,
+      "recall@5": 1.4,
+      "recall@10": 2.53
+    },
+    "encode_seconds": 809.9
+  },
+  "moda_siglip_distilled": {
+    "n_query": 1500,
+    "n_gallery": 42537,
+    "metrics": {
+      "recall@1": 0.2,
+      "recall@5": 1.4,
+      "recall@10": 2.13
+    },
+    "encode_seconds": 969.5
+  },
+  "delta_distilled_minus_baseline": {
+    "recall@1": -0.07,
+    "recall@5": 0.0,
+    "recall@10": -0.4
+  },
+  "verdict": "PRESERVED"
+}

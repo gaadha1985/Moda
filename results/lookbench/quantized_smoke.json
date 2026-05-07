@@ -1,0 +1,166 @@
+{
+  "checkpoint": "models/moda-siglip-matryoshka/best/model_state_dict.pt",
+  "slices": [
+    256
+  ],
+  "variants": [
+    "fp32",
+    "fp16",
+    "int8",
+    "binary",
+    "binary_rerank"
+  ],
+  "subsets": {
+    "aigen_streetlook": {
+      "256": {
+        "fp32": {
+          "fine_recall": {
+            "recall@1": 85.0,
+            "recall@5": 95.0,
+            "recall@10": 98.12
+          },
+          "coarse_recall": {
+            "recall@1": 94.38,
+            "recall@5": 98.75,
+            "recall@10": 98.75
+          },
+          "id_recall": {
+            "recall@1": 75.0,
+            "recall@5": 91.25,
+            "recall@10": 96.88
+          },
+          "ndcg@5": 78.94,
+          "bytes": {
+            "q_bytes": 1024,
+            "g_bytes": 1024
+          }
+        },
+        "fp16": {
+          "fine_recall": {
+            "recall@1": 85.0,
+            "recall@5": 95.0,
+            "recall@10": 98.12
+          },
+          "coarse_recall": {
+            "recall@1": 94.38,
+            "recall@5": 98.75,
+            "recall@10": 98.75
+          },
+          "id_recall": {
+            "recall@1": 73.12,
+            "recall@5": 91.25,
+            "recall@10": 96.88
+          },
+          "ndcg@5": 79.06,
+          "bytes": {
+            "q_bytes": 512,
+            "g_bytes": 512
+          }
+        },
+        "int8": {
+          "fine_recall": {
+            "recall@1": 85.0,
+            "recall@5": 95.0,
+            "recall@10": 98.12
+          },
+          "coarse_recall": {
+            "recall@1": 94.38,
+            "recall@5": 98.75,
+            "recall@10": 98.75
+          },
+          "id_recall": {
+            "recall@1": 73.12,
+            "recall@5": 91.25,
+            "recall@10": 96.88
+          },
+          "ndcg@5": 79.1,
+          "bytes": {
+            "q_bytes": 256,
+            "g_bytes": 256
+          }
+        },
+        "binary": {
+          "fine_recall": {
+            "recall@1": 81.88,
+            "recall@5": 94.38,
+            "recall@10": 98.12
+          },
+          "coarse_recall": {
+            "recall@1": 93.12,
+            "recall@5": 98.75,
+            "recall@10": 98.75
+          },
+          "id_recall": {
+            "recall@1": 66.88,
+            "recall@5": 90.62,
+            "recall@10": 95.0
+          },
+          "ndcg@5": 75.4,
+          "bytes": {
+            "q_bytes": 32,
+            "g_bytes": 32
+          }
+        },
+        "binary_rerank": {
+          "fine_recall": {
+            "recall@1": 85.0,
+            "recall@5": 95.0,
+            "recall@10": 98.12
+          },
+          "coarse_recall": {
+            "recall@1": 94.38,
+            "recall@5": 98.75,
+            "recall@10": 98.75
+          },
+          "id_recall": {
+            "recall@1": 73.12,
+            "recall@5": 91.25,
+            "recall@10": 96.88
+          },
+          "ndcg@5": 78.97,
+          "bytes": {
+            "q": 544,
+            "g": 544,
+            "note": "binary index + fp16 for top-100 rerank"
+          }
+        }
+      }
+    }
+  },
+  "device": "cpu",
+  "batch_size": 4,
+  "overall": {
+    "256": {
+      "fp32": {
+        "fine_recall@1": 85.0,
+        "coarse_recall@1": 94.38,
+        "ndcg@5": 78.94,
+        "id_recall@1": 75.0
+      },
+      "fp16": {
+        "fine_recall@1": 85.0,
+        "coarse_recall@1": 94.38,
+        "ndcg@5": 79.06,
+        "id_recall@1": 73.12
+      },
+      "int8": {
+        "fine_recall@1": 85.0,
+        "coarse_recall@1": 94.38,
+        "ndcg@5": 79.1,
+        "id_recall@1": 73.12
+      },
+      "binary": {
+        "fine_recall@1": 81.88,
+        "coarse_recall@1": 93.12,
+        "ndcg@5": 75.4,
+        "id_recall@1": 66.88
+      },
+      "binary_rerank": {
+        "fine_recall@1": 85.0,
+        "coarse_recall@1": 94.38,
+        "ndcg@5": 78.97,
+        "id_recall@1": 73.12
+      }
+    }
+  }
+}
