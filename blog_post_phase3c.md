@@ -20,7 +20,7 @@ If you are new to this, here is the model.
 
 A retrieval pipeline has two jobs. First, pull a small pool of candidates from a huge index (retrieval). Second, rank that pool as carefully as you can (reranking). The retriever is fast and approximate. The reranker is slow and accurate but only ever sees the candidates the retriever chose.
 
-The implication for error analysis: if the correct answer is not in the retrieved pool, the reranker cannot save you. The ceiling on your final metric is recall at the candidate pool size. If recall@100 is 25%, then even a perfect reranker can only give you nDCG@10 on 25% of queries. The other 75% are lost at retrieval.
+The implication for error analysis: if the correct answer is not in the retrieved pool, the reranker cannot save you. The ceiling on your final metric is recall at the candidate pool size. If recall@100 is 25%, the 75% of queries where the purchased product is not in the top-100 contribute zero to the final nDCG@10 regardless of how good the reranker is. The max achievable mean nDCG@10 is bounded by recall@100 exactly in the simple single-positive case, and approximately bounded in our graded-relevance setup.
 
 In the Blog 3 pipeline, we measured recall@100 on the SPLADE+Dense hybrid: it was about 22.6%. Meaning 77.4% of queries did not have the purchased product in the top-100. Even a godlike reranker had an asymptote.
 
