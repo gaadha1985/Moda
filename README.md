@@ -496,11 +496,11 @@ Each query in `qrels.csv` has:
 If you use this benchmark or code, please cite:
 
 ```bibtex
-@misc{moda2026,
-  title  = {MODA: The First Open Benchmark for End-to-End Fashion Search},
+@software{moda2026,
+  title  = {MODA: Open-source benchmark and models for fashion search},
   author = {Hopit AI},
   year   = {2026},
-  url    = {https://github.com/hopit-ai/moda}
+  url    = {https://github.com/hopit-ai/Moda}
 }
 ```
 
