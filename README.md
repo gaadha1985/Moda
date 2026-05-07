@@ -1,7 +1,7 @@
 # MODA
 
 **The first open-source, end-to-end benchmark for fashion search with a full component-by-component breakdown.**  
-253,685 purchase-grounded queries · 105,542 H&M products · 40+ pipeline configs · nDCG@10 = 0.1063 on H&M text retrieval (+301% over dense baseline) · Fine R@1 = 67.68 on LookBench image-to-image retrieval (+3.84 over FashionSigLIP) · MODA-SigLIP-Matryoshka model on HuggingFace (96x compression vs FashionSigLIP fp32, equal quality)
+253,685 purchase-grounded queries · 105,542 H&M products · 40+ pipeline configs · nDCG@10 = 0.1063 on H&M text retrieval (+301% over dense baseline) · Fine R@1 = 67.68 on LookBench image-to-image retrieval (+3.84 over FashionSigLIP) · 5 model checkpoints on HuggingFace (Apache 2.0, vision-only fp16 at 186 MB, Matryoshka with 64-768 dim slices)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -36,15 +36,17 @@ We are publishing this work as a series of technical blog posts, each covering o
 
 ## Released models
 
-All MIT licensed. Drop-in replacements for FashionSigLIP. Three checkpoints, ranked by recommended use.
+All Apache 2.0 licensed. Built on ViT-B/16-SigLIP. Every model beats the FashionSigLIP baseline on LookBench.
 
-| Model | Dim | Best Fine R@1 | Δ vs FashionSigLIP | Use when |
-|---|---|---|---|---|
-| `hopit-ai/moda-fashion-siglip-matryoshka` | flexible (64 / 128 / 256 / 384 / 512 / 768) | 67.42 @ 256d | +3.58 | Recommended default. Slice the embedding to whatever dimension fits your storage budget at query time. 256d saturates Fine R@1 on LookBench. Combine with binary + Hamming rerank for 32 bytes per vector at full retrieval quality. |
-| `hopit-ai/moda-fashion-siglip` | 768 | 67.63 | +3.79 | Drop-in replacement for FashionSigLIP. Same dimensionality, ensemble-class quality in a single forward pass. Use when you cannot change embedding dimension. |
-| `hopit-ai/moda-fashion-siglip-deepfashion2` | 768 | 66.52 | +2.68 | Phase 5 single-model fine-tune. Smaller training recipe, easier to reproduce. Ships for research reproducibility. |
+| Model | Dim | Size | Fine R@1 | nDCG@5 | Δ vs FashionSigLIP | Use when |
+|---|---|---|---|---|---|---|
+| `hopit-ai/moda-fashion-distilled` | 768 | 775 MB | **67.63** | 53.85 | **+3.79** | **Best accuracy.** Drop-in replacement for FashionSigLIP at the same dimension. Distilled from a 3-model ensemble into one 768d model. |
+| `hopit-ai/moda-fashion-matryoshka` | flexible (64-768) | 775 MB | **67.42 @ 256d** | 57.48 @ 256d | **+3.58 at 256d** | **Flexible dimension.** Slice the embedding to your storage budget at query time. 256d saturates Fine R@1 (3x smaller index than 768d, no quality loss). Combine with binary + Hamming rerank for 32 bytes per vector. |
+| `hopit-ai/moda-fashion-vision-fp16` | 768 | **186 MB** | 67.42 | 53.87 | +3.58 | **Smallest deployment.** Vision-only encoder, fp16 weights. 4.2x smaller than the full CLIP variant, only -0.21 points on Fine R@1. Built for edge, mobile, and serverless inference. |
+| `hopit-ai/moda-fashion-distilled-512d` | 512 | 777 MB | **67.63** | **54.11** | **+3.79** | **512-d at no quality loss.** Distilled backbone plus a learned Linear(768→512) projection head. Highest nDCG@5 of any MODA variant. 33% smaller embeddings than 768d. |
+| `hopit-ai/moda-fashion-deepfashion2` | 768 | 775 MB | 66.52 | 52.46 | +2.68 | **Simplest recipe.** Phase 5 single-model fine-tune on DeepFashion2 cross-domain pairs. No distillation, no ensemble. Ships for research reproducibility. |
 
-Each model card includes the full per-subset LookBench evaluation, paper-reproduction deltas against the FashionSigLIP baseline, and the leakage audit artifact. Evaluation scripts live in this repo.
+Every model card ships with a standalone `inference.py` (run `python inference.py --image <path>` to get embeddings, no external config needed), the full per-subset LookBench evaluation, paper-reproduction deltas against the FashionSigLIP baseline, and the leakage audit artifact. Evaluation scripts live in this repo.
 
 ---
 
